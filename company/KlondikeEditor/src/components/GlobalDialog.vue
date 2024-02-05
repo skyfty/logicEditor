@@ -5,9 +5,9 @@
     :close-on-click-modal="false"
   >
     <slot></slot>
-    <!-- <span slot="footer" class="dialog-footer">
+    <span slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">关闭</el-button>
-    </span> -->
+    </span>
   </el-dialog>
 </template>
 

@@ -1,8 +1,12 @@
 <template>
   <div>
-    <span>牌桌</span>&nbsp;&nbsp;
-    <span v-if="introd != 0">{{'路径：'+ a[0].name + '  /  ' + a[1].name +' 关卡数：'+a[0].levels.length}}</span>
-    <span>{{  }}</span>
+    <span v-if="introd != 0" style="font-size: 15px;"> 
+      <span style="color: rgb(62, 62, 62);font-weight: 600;">关卡组：</span>{{ a[2].name }}&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(62, 62, 62);font-weight: 600;">关卡包：</span>{{ a[0].name }}&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(62, 62, 62);font-weight: 600;">关卡：</span>{{ a[1].name }}&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(62, 62, 62);font-weight: 600;">关卡数：</span>{{ a[0].levels.length }}&nbsp;&nbsp;&nbsp;
+      <span style="color: rgb(62, 62, 62);font-weight: 600;">关卡难度：</span>{{ a[1].difficultyLevel +'('+$store.state.data.filter(e => e.id == this.introd[1].difficultyLevel)[0].difficulty+')' }}
+    </span>
     <!-- <router-link to="/a">点击</router-link> -->
     <div @click="lph()" style="float: right;width: 60px;cursor: pointer;">
       <span>全屏</span>&nbsp;
@@ -13,6 +17,7 @@
 
 <script>
 import screenfull from 'screenfull'
+import $ from 'jquery'
 export default{
   name: 'GameTop',
   props:['lph', "introd"],

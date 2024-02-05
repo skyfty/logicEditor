@@ -4,8 +4,8 @@
       <el-button @click="show1()" type="primary" round>{{cards = show==false?'显示底牌':'隐藏底牌'}}</el-button>
       <h1>需要&nbsp;{{ box.moves }}&nbsp;步</h1>
       <div>
-        <span>ID:{{ box.id }}</span>
-        <span>{{ box.level }}</span>
+        <span style="margin-bottom: 10px;">牌组-ID：{{ box.deckGameId }}</span>
+        <span>难度等级：{{ $store.state.data.filter(e => e.id == this.introd[1].difficultyLevel)[0].difficulty }}</span>
       </div>
     </div>
     <div style="padding: 0 80px;display: flex;justify-content: space-between;">
@@ -20,12 +20,12 @@
       <div  class="empty" v-if="cards = show == false">
         <span v-for="(item,index) in data1" :key="index">
           {{item}}
-          </span>
+          </span> 
         </div>
     </div>
-    <div style="position: absolute; top: 47%;left: 19.5%;width: 62.5%;
-        display: flex;flex-direction: row-reverse;
-        justify-content: space-between;
+    <div style="position: absolute; top: 43%;left: 0;width: 100%;padding: 0 8%;
+        display: flex;flex-direction: row-reverse;box-sizing: border-box;
+        justify-content: space-around;
         height: 350px;;overflow: hidden;">
       <span class="span" v-for="(item1,index1) in underpans1" :key="index1">
         <ul 
@@ -36,6 +36,14 @@
           <li><img :src= "require('../../assets/Card/CardFront'+item2.dd+item2.cc)" width="120px" alt=""></li>
         </ul>
       </span>
+    </div>
+    <div>
+      <h2>本局额外奖励</h2>
+      <span>金币:</span><i>{{ this.introd[1].gold }}</i> <br />
+      <span>经验:</span><i>{{ this.introd[1].experience }}</i><br />
+      <span>钻石:</span><i>{{ this.introd[1].diamond }}</i><br />
+      <span>道具:</span><i>{{ this.introd[1].prop }}</i><br />
+      <span>体力:</span><i>{{ this.introd[1].stamina }}</i><br />
     </div>
   </div>
 </template>
@@ -91,10 +99,10 @@ export default {
                   this.aa.cc = '11.png'
                   break;
                 case 'Q':
-                this.aa.cc = '11.png'
+                this.aa.cc = '12.png'
                   break;
                 case "K":
-                this.aa.cc = '11.png'
+                this.aa.cc = '13.png'
                   break;
                 case "A":
                 this.aa.cc = '0' + '1.png'
@@ -143,9 +151,9 @@ export default {
     nameData(){
         this.box = this.a
         this.data1 = this.box.game.foundations
-          this.box.game['tableau piles'].forEach(e => {
+          this.box.game['tableauPiles'].forEach(e => {
           let sa = []
-          e.forEach(a => {
+          e['cards'].forEach(a => {
             this.sol(a)
             this.sols(a)
             sa.push(_.cloneDeep(this.aa))
@@ -154,13 +162,13 @@ export default {
         });
 
         // 隐藏的牌
-          let sa = []
+          let sas = []
           this.box.game.stock.forEach(a => {
               this.sol(a)
               this.sols(a)
-              sa.push(_.cloneDeep(this.aa))
+              sas.push(_.cloneDeep(this.aa))
             })
-          this.underpans2 = _.cloneDeep(sa)
+          this.underpans2 = _.cloneDeep(sas)
     },
   },
 
@@ -169,13 +177,11 @@ export default {
 
 <style lang="scss" scoped>
   .nav{
-    span{
-      display: block;
-      width: 120px;
-      height: 160px;
-    }
+    width: 100%;
+    height: 100%;
+    position: relative;
     .span{
-      float: right;
+      float: left;
       text-align: center;
       box-shadow:0px 3px 5px 3px #dfdcdc;
     }
@@ -195,7 +201,7 @@ export default {
       margin: auto;
       margin-bottom: 30px;
       font-size: 22px;
-      background: rgba(0, 238, 255, 0.3);
+      background: rgba(121, 244, 252, 0.3);
       button{
         position: absolute;
         left: 10px;
@@ -204,16 +210,47 @@ export default {
       div{
         position: absolute;
         right: 10px;
-        top: -13px;
+        top: 12%;
         // display: flex;
         // flex-direction:row;
         span{
           display: block;
-          width: 50px;
+          width: 170px;
           height: 20px;
-          padding-bottom: 8px;
+          line-height: 20px;
 
         }
+      }
+    }
+    div:nth-child(2),div:nth-child(3){
+      span{
+        display: block;
+        width: 120px;
+        height: 160px;
+      }
+    }
+    div:nth-child(4){
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      width: 280px;
+      line-height: 35px;
+      flex-wrap: wrap;
+      padding:10px 20px;
+      font-size: 20px;
+      color: rgba($color: #ccc, $alpha: 0.5);
+      h2{
+        width: 300px;
+      }
+      span{
+        width: 60px;
+        font-size: 23px;
+        font-weight: 600;
+        color: rgba($color: #ccc, $alpha: 0.5);
+      }
+      i{
+        width: 60px;
       }
     }
   }

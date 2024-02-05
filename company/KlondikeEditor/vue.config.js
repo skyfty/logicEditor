@@ -28,37 +28,11 @@ module.exports = {
       },
       // 菜单栏数据
       '/z': {
-        target: 'http://localhost:3005/api/add',
+        target: './src/api/data.json',
         ws: true,
         changeOrigin: true,
           pathRewrite:{
             '^/z':''
-          }
-      },
-      // 同id修改
-      '/s': {
-        target: 'http://localhost:3005/api/cha',
-        ws: true,
-        changeOrigin: true,
-          pathRewrite:{
-            '^/s':''
-          }
-      },
-      // 同id修改
-      '/a': {
-        target: 'http://localhost:3005/api/cha1',
-        ws: true,
-        changeOrigin: true,
-          pathRewrite:{
-            '^/a':''
-          }
-      },
-      '/bag/add': {
-        target: 'http://poke.touchmagic.cn/bag/add',
-        ws: true,
-        changeOrigin: true,
-          pathRewrite:{
-            '^/bag/add':''
           }
       },
     }

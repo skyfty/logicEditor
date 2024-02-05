@@ -2,25 +2,17 @@
   <div class="home">
     <!-- 头部 -->
     <ul class="layui-nav">
-      <li class="layui-nav-item" v-for="(item, index) in box" :key="index" lay-unselect>
+      <li class="layui-nav-item" v-for="(item, index) in box" @click="onClickChildren(item,index)" :key="index" lay-unselect>
         <a href="javascript:;">
-          <i class="layui-icon" :class="item.clas"></i>
+          <i class="layui-icon" :class="item.class"></i>
           <span>{{ item.name }}</span>
         </a>
-        <dl class="layui-nav-child">
-          <dd v-for="(items, indexs) in item.children" @click="onClickChildren(items,indexs)" :key="indexs">
-            <a href="javascript:;">{{ items }}</a>
-          </dd>
-          <template v-if="item.tui">
-            <hr>
-            <dd style="text-align: center;"><a href="nav.html">{{ item.tui }}</a></dd>
-          </template>
-        </dl>
       </li>
     </ul>
     <global-dialog :title="value" ref="globalDialog">
       <!-- 弹出框内容 -->
-      <level_difficulty></level_difficulty>
+      <level_difficulty v-if="index == 1"></level_difficulty>
+      <!-- <sylloge_index v-else-if="index == 2"></sylloge_index> -->
     </global-dialog>
     <navigation></navigation>
   </div>
@@ -28,37 +20,22 @@
 
 <script>
 import level_difficulty from '../components/difficulty/level_difficulty.vue'
+import sylloge_index from '../components/sylloge/index.vue'
 import navigation from './navigation.vue';
 export default{
-  components: { navigation },
   data(){
     return {
       box:[
-        {imgs:'https://unpkg.com/outeres@0.0.10/demo/avatar/1.jpg'
-          ,name:"admin",
-          clas:'layui-icon-github',
-          tui:'退出',
-          children:[
-            "重置密码"
-          ]},
-          {imgs:'https://unpkg.com/outeres@0.0.10/demo/avatar/1.jpg'
-          ,name:"工具",
-          clas:'layui-icon-slider',
-          children:[
-            "难度","Update","About"
-          ]},
-          {imgs:'https://unpkg.com/outeres@0.0.10/demo/avatar/1.jpg'
-          ,name:"帮助",
-          clas:'layui-icon-tips-fill',
-          children:[
-          "Help","Update","About"
-          ]},
+        {name:"admin",class:'layui-icon-github',tui:'退出'},
+        {name:"难度",class:'layui-icon-slider'},
+        {name:"总汇",class:'el-icon-s-data'},
       ],
-      value:''
+      value:'',
+      index:''
     }
   },
   components:{
-    navigation,level_difficulty
+    navigation,level_difficulty, sylloge_index
   },
   mounted() {
 
@@ -66,11 +43,17 @@ export default{
   methods:{
     onClickChildren(data,index){
       switch(index){
-        case 0:
-            this.value = data;
+        case 1:
+            this.index = index
+            this.value = data.name;
             this.$refs.globalDialog.dialogVisible = true;
           break;
-        
+        case 2:
+            this.index = index
+            this.value = data.name;
+            this.$router.push({path: '/sylloge_indexa',query: {}})
+            this.$refs.globalDialog.dialogVisible = true;
+          break;
       }
     }
   }

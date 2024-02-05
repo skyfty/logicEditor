@@ -17,7 +17,7 @@ export default new Vuex.Store({
   actions: {
     fetchData({ commit }) {
       return new Promise((resolve, reject) => {
-        GetData({name:'level_difficulty'})
+        GetData({name:'levelDifficulty'})
           .then(res => {
             res == null ? commit('setData', []):commit('setData', res);
             resolve(); 

@@ -17,7 +17,7 @@
       </el-container>
       <!-- 右侧导航栏 -->
       <el-aside width="250px">
-        <asides :introd="introd" @update="update" ref="asides"></asides>
+        <asides :introd="introd" ref="asides"></asides>
       </el-aside>
     </el-container>
   </div>
@@ -71,16 +71,6 @@ export default {
         }
       }
     },
-    update(id,ids){
-      getdata()
-        .then(res => {
-          let item = res.data.filter(d => d.id == id)[0]
-          let items = item.levels.filter(d => d.id == ids)[0]
-          this.introd = [item, items]
-          // this.$refs.menu.klondikeList(item, items)
-          this.$refs.menu.getData()
-      })
-    }
   },
 };
 </script>

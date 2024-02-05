@@ -10,11 +10,11 @@ const routes = [
     name: 'Home',
     component: Home
   },
-  // {
-  //   path: '/a',
-  //   name: 'A',
-  //   component: () => import('../views/head/1.vue')
-  // }
+  {
+    path: '/sylloge_indexa',
+    name: 'sylloge_index',
+    component: () => import('../components/sylloge/index.vue')
+  }
 ]
 
 const router = new VueRouter({

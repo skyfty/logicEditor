@@ -1,44 +1,49 @@
 <template>
   <div>
-    <el-menu style="box-sizing: border-box;height: 100%;" unique-opened default-active="" class="el-menu-vertical-demo"
+    <el-menu style="box-sizing: border-box;height: 100%;" default-active="" class="el-menu-vertical-demo"
       :collapse="isCollapse">
-      <div :style="{ width: isCollapse == true ? '63px' : '200px' }" class="customs">
+      <div :style="{ width: isCollapse == true ? '63px' : '220px' }" class="customs">
         <span style="float: left;" v-if="!isCollapse">关卡</span>
         <span style="float: right;" v-if="!isCollapse">
-          <i class="el-icon-search" @click="inquire()" title="搜索"></i>&nbsp;
-          <!-- 新增 -->
           <i class="el-icon-circle-plus" @click="fn(navigation, box)" title="新增"></i>&nbsp;
-          <!-- 收起导航 -->
           <i class="el-icon-d-arrow-left" @click="isCollapse = !isCollapse" title="关闭"></i></span>
-        <!-- 展开 -->
-        <i class="el-icon-d-arrow-right" v-if="isCollapse" title="打开" @click="isCollapse = !isCollapse"></i>
+          <i class="el-icon-d-arrow-right" v-if="isCollapse" title="打开" @click="isCollapse = !isCollapse"></i>
       </div>
-      <div class="box" v-loading="loading" ref="scrollContainer" :style="{ width: isCollapse == true ? '63px' : '200px' }"
+      <div class="box" v-loading="loading" ref="scrollContainer" :style="{ width: isCollapse == true ? '63px' : '220px' }"
         style="height:calc(100% - 50px);overflow: auto;">
         <div class="box1">
-          <el-submenu :index="item.id" v-for="(item, index) in navigation.slice(currentPage, currentPage + 16)"
-            @contextmenu.prevent.native="openMenu($event, '0' + item.id, index, item)" :key="index">
+          <el-submenu :index="data.id + 'levelGroup'" class="lv" v-for="(data, index1) in navigation" 
+              @contextmenu.prevent.native="openMenu($event, '2' + data.id, index1, data)" :key="index1">
             <template slot="title">
               <i class="el-icon-location"></i>
               <!-- 右键 -->
-              <span slot="title">{{ isCollapse == false ? item.name : '' }}
+              <span slot="title">{{ isCollapse == false ? data.name : '' }}
               </span>
             </template>
-            <draggable v-model="item.levels" group="menu1" @end="onDragEnd($event,item.levels, item)">
-              <el-menu-item @click.native="klondikeList(item, items)" :index="'room'+items.id"
-                @contextmenu.prevent.stop.native="openMenu($event, '1' + items.id, indexs, items, index, item)"
-                v-for="(items, indexs) in item.levels.slice(0,item.levels.length)" :key="indexs">
-                  <template slot="title">
-                    <i class="el-icon-location"></i>
-                    <span slot="title">
-                          {{ items.name}}
-                    </span>
-                  </template>
-              </el-menu-item>
+            <draggable v-model="data.levelPack" group="menu1" @end="onDragEnds($event,data.levelPack, data)">
+              <el-submenu :index="item.id" v-for="(item, index) in data.levelPack"
+                @contextmenu.prevent.stop.native="openMenu($event, '0' + item.id, index, item)" :key="index">
+                <template slot="title"> 
+                  <i class="el-icon-location"></i>
+                  <span slot="title">{{item.name}}
+                  </span>
+                </template>
+                <draggable v-model="item.levels" group="menu1" @end="onDragEnd($event,item.levels, item)">
+                  <el-menu-item @click.native="klondikeList(item, items, data)" :index="'room'+items.id"
+                    @contextmenu.prevent.stop.native="openMenu($event, '1' + items.id, indexs, items, index, item)"
+                    v-for="(items, indexs) in item.levels" :key="indexs">
+                      <template slot="title">
+                        <i class="el-icon-location"></i>
+                        <span slot="title">
+                              {{items.name}}
+                        </span>
+                      </template>
+                  </el-menu-item>
+                </draggable>
+              </el-submenu>
             </draggable>
           </el-submenu>
         </div>
-        <div class="box2" :v-if="navigation.length > 15"></div>
       </div>
     </el-menu>
 
@@ -61,13 +66,8 @@
 
     <!-- 新增弹出框 -->
     <ul id="add" ref="add" v-show="show" @mouseleave="show = !show">
-      <li v-for="(add, index) in add1 == 1 ? added1 : added" @mouseover="rightOver(add, index)"
-        @mouseleave="rightLeave(add, index)" @click="right(index)" class="el-icon-location"
-        :key="index">
-        {{ add }}
-        <ul v-if="add == '新关卡' && difficulty == true" class="difficulty">
-          <li v-for="(item, index) in added2" @click="rightData(item,index)" :key="index">{{ item.name }}</li>
-        </ul>
+      <li v-for="(add, index) in added[add1]" @click="right(index)" class="el-icon-location"
+        :key="index">{{ add }}
       </li>
     </ul>
     <el-dialog :title="'将 '+state1.name+' 发送到：'" :visible.sync="draggable" width="400px">
@@ -76,7 +76,7 @@
               { required: true, message: '选择关卡组', trigger: 'change' }
             ]">
           <el-select v-model="form.region" placeholder="选择关卡组">
-            <el-option v-for="(item, index) in navigation" :key="index" :label="item.name" :value="item.id"></el-option>
+            <el-option v-for="(item, index) in filteredNavigation" :key="index" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -85,20 +85,29 @@
         <el-button type="primary" @click="draggables('form')">确 定</el-button>
       </div>
     </el-dialog>
-    <input style='width:60px' autofocus v-show="value1" ref="input" @blur.prevent="txtinput()" v-model="value">
+    <input style='width:60px' autofocus v-show="value1" ref="input" @blur.prevent="txtinput()" v-model.trim="value">
+    <global-dialog :title="globalDialog.name" ref="globalDialog">
+      <!-- 弹出框内容 -->
+      <level_difficulty ref="difficulty" v-if="globalDialog.id == 0" :add2="add2" @getData="getData"></level_difficulty>
+      <resetGroup v-else-if="globalDialog.id == 1" :add2="add2" :state1="state1" @getData="getData"></resetGroup>
+      <subpackageView v-else-if="globalDialog.id == 2" :add2="add2" :state1="state1" @getData="getData"></subpackageView>
+    </global-dialog>
   </div>
 </template>
 
 <script>
 import _ from 'lodash';
 import $ from 'jquery';
+import level_difficulty from '../../components/level/levelGroup.vue';
+import resetGroup from '../../components/level/resetGroup.vue';
+import subpackageView from '../../components/subpackage/index.vue';
 import axios from 'axios';
 import draggable from 'vuedraggable'
-import { getdata, postdata, delet, put,Drag, cutGroup, AddData,removeData , post } from '../../api/api-pro'
+import { getdata, postdata, delet, put,Drag, cutGroup, deckGame, addklondike, subpackage } from '../../api/api-pro'
 export default {
   name: 'GameIndex',
   components: {
-    draggable
+    draggable,level_difficulty,resetGroup,subpackageView
   },
   data() {
     return {
@@ -109,8 +118,6 @@ export default {
       isCollapse: false,
       // box:'展开',
       navigation: [],
-      //右键选择的索引
-      box3: '',
       // 获取的编辑元素
       input: '',
       value1: false,
@@ -119,113 +126,130 @@ export default {
       add2: '',
       // 显示隐藏添加
       show: false,
-      difficulty: false,
+      // difficulty: false,
       draggable:false,
       form: {
         region: ''
       },
-      added: ['新关卡', '编辑', '删除', '查询'],
-      added1: ['编辑', '删除', '名切换','发送到'],
-      added2: '', 
-      currentPage: 0,
-      // 关卡查询
-      currentPage1: [],
-      // 关卡包查询
-      currentPage2: [],
+      added:[
+        ['重置','编辑', '删除','分包','复制卡包'],
+        ['编辑', '名切换','发送到'],
+        ['新关卡', '编辑', '删除','粘贴'],
+      ],
       cutName: '',
       dialogFormVisible: false,
       state1: '',
       state2: {id:"",name:""},
-      box: ''
+      box: '',
+      copyData:[],
+      globalDialog:{id:"",name:""},
     };
   },
 
   mounted() {
+    this.$store.dispatch('fetchData')
     this.getData()
-    this.levelData()
-    const scrollContainer = this.$refs.scrollContainer;
-    scrollContainer.addEventListener("scroll", this.handleScroll);
+    // this.$refs.globalDialog.dialogVisible = true;
+  },
+
+  computed: {
+    filteredNavigation() {
+      let data;
+      this.navigation.filter(e => {
+        if (e.levelPack) {
+          e.levelPack.filter(a => {
+            if (a.id === this.state1.KlondikeId) {
+              data = e.levelPack;
+            }
+          });
+        }
+      })
+      return data;
+    }
   },
 
   methods: {
-    levelData(){
-      this.$store.dispatch('fetchData')
-        .then(() => {
-          this.added2 = this.$store.state.data
-        })
-    },
     getData() {
-      // 全部数据
+      this.loading = true
       getdata()
         .then(res => {
           this.navigation = res.data
-          this.currentPage1 = _.cloneDeep(this.navigation)
-          this.currentPage2 = _.cloneDeep(this.navigation)
-          document.querySelector('.box2').style.height = this.navigation.length * 56 + 'px'
-            this.loading = false
+          this.loading = false
+          this.$refs.globalDialog.dialogVisible = false;
         })
         .catch(err => {
           console.log(err);
         })
     },
-    // 滚动事件
-    handleScroll() {
-      let box1 = document.querySelector(".box1");
-      let box = this.$refs.scrollContainer.scrollTop;
-      box1.style.top = box + "px";
-      this.currentPage = Math.floor(box / 56)
-    },
 
-    klondikeList(item, items){
-      this.$emit('introduction', this.introduction = [item, items])
+    klondikeList(item, items, data){
+      this.$emit('introduction', this.introduction = [item, items, data])
     },
 
     onDragEnd(event,levels, item) {
-      console.log(levels, item);
-      this.loading = true
       let newIndex = event['newIndex']
-      Drag({
-        id: levels[newIndex].id,
-        children:'poke',
-        list: newIndex,
-        oldList: levels[newIndex].list,
-        klondikeId:  item.id,
-      })
-      .then(res =>{
-        this.getData()
-        this.loading = false
-        this.succe(res)
-      })
-      .catch(err =>{
-        console.log(err);
-      })
+      if(event.from == event.to){
+        this.loading = true
+        Drag({id: levels[newIndex].id,children:'poke',list: newIndex,oldList: levels[newIndex].list,klondikeId:item.id})
+        .then(res =>{
+          this.getData()
+          this.loading = false
+          this.succe(res)
+        })
+        .catch(err =>{
+          console.log(err);
+        })
+      }else{
+          this.getData()
+        this.error('不能进行跨包移动！！！')
+      }
     },
 
-    rightOver(data,index){
-      index == 0 ? this.difficulty = true : this.difficulty = false
+    onDragEnds(event,levels, item) {
+      let newIndex = event['newIndex']
+      let oldIndex = event['oldIndex']
+      if(oldIndex+1 == newIndex+1){
+        this.error('拖动位置没有变化')
+      }else{
+        this.loading = true
+          Drag({id: levels[newIndex].id,children:'klondike',list: newIndex + 1,oldList: levels[newIndex].sequenceId - 0,klondikeId:item.id})
+          .then(res =>{
+            this.getData()
+            this.loading = false
+            this.succe(res)
+          })
+          .catch(err =>{
+            console.log(err);
+          })
+      }
     },
-    rightLeave(data,index){
-      index == 0 ? this.difficulty = true : this.difficulty = false
-    },
-
     // 右键
     openMenu(e, a, b, c, d,item) {
-      this.levelData()
-      // 打开的弹窗
-      this.add1 = a.slice(0, 1) == 0 ? '0' : '1'
+      this.add1 = a.slice(0, 1)-0
       this.add2 = a.slice(1)
+      switch(this.add1){
+        case 0:
+          this.value = e.currentTarget.children[0].children[1].innerHTML
+          this.input = e.currentTarget.children[0].children[1]
+          break;
+        case 1:
+          this.value = e.currentTarget.children[1].innerHTML
+          this.input = e.currentTarget.children[1]
+          this.globalDialog.id = false
+          this.loadAll(item)
+          break;
+        case 2:
+          this.value = e.currentTarget.children[0].children[1].innerHTML
+          this.input = e.currentTarget.children[0].children[1]
+          this.globalDialog.id = false
+          break;
+      }
       this.state1 = c
-      this.loadAll(item)
-      // 菜单下标
-      this.box3 = b
-      // 输入框内容
-      this.value = this.add1 == 0 ? e.currentTarget.children[0].children[1].innerHTML : e.currentTarget.children[1].innerHTML
-      this.input = this.add1 == 0 ? e.currentTarget.children[0].children[1] : e.currentTarget.children[1]
       this.show = !this.show;
       // 右键菜单定位
       this.$refs.add.style.top = e.clientY - 10 + 'px'
       this.$refs.add.style.left = e.clientX - 5 + 'px'
-      if (b >= 13) {
+      if (this.$refs.scrollContainer.offsetHeight - e.clientY < 100) {
         this.$refs.add.style.top = e.clientY - 125 + 'px'
         this.$refs.add.style.left = e.clientX - 5 + 'px'
       }
@@ -242,67 +266,32 @@ export default {
           this.error('关卡包：新增失败')
         })
     },
-    // 关卡包查询
-    inquire() {
-      let c = this
-      layer.prompt({ title: '查询关卡包' }, function (value, index, elem) {
-        if (value.length == 0) {
-          c.navigation = c.currentPage2
-          layer.msg('查询：内容为空')
-        } else {
-          // 遍历关卡是否存在改名称
-          let a = c.navigation.filter(e => {
-            return e.name == value
-          })
-          if (a.length != 0) {
-            c.navigation = a
-            document.querySelector('.box2').style.height = c.navigation.length * 56 + 'px'
-            layer.msg('查询：成功');
-          } else {
-            layer.msg('查询：未找到')
-          }
-        }
-        // 关闭 prompt
-        layer.close(index);
-      })
-    },
     // 右键关卡包
     right(a) {
-      switch (a) {
-        case 0: {
-          this.add1 == 0 ? this.add() : this.comp()
-          this.$refs.add.style.display = 'none'
-          break;
-        }
-        case 1: {
-          this.add1 == 0 ? this.comp() : this.dele()
-          this.$refs.add.style.display = 'none'
-          break;
-        }
-        case 2: {
-          this.add1 == 0 ? this.dele() : this.cut()
-          this.$refs.add.style.display = 'none'
-          break;
-        }
-        case 3: {
-          this.add1 == 0 ? this.down() : this.draggable = true
-          this.$refs.add.style.display = 'none'
-          break;
+      const actions = [
+        [() => {
+          this.globalDialog.id = 1,
+          this.globalDialog.name = '重置关卡包', 
+          this.$refs.globalDialog.dialogVisible = true; 
+        }, 
+        this.comp, 
+        () => {
+          this.globalDialog={id:0, name: '新建关卡包'}, 
+          this.$refs.globalDialog.dialogVisible = true; }],
+        [this.comp, this.cut, this.comp],
+        [this.dele, () => { this.draggable = true;console.log(this.filteredNavigation); }, this.dele],
+        [this.subpackages, null, this.stickup],
+        [this.copy, null, null],
+      ];
+
+      if (a >= 0 && a < actions.length && this.add1 >= 0 && this.add1 < actions[a].length) {
+        const action = actions[a][this.add1];
+        if (action) {
+          action();
         }
       }
-    },
-    rightData(data,index){
-      post({
-        klondikeId:this.add2,
-        level:data.name})
-        .then(res => {
-          this.succe('关卡：增加成功')
-          this.getData()
-        })
-        .catch(err => {
-              console.log(this.add2,data.name);
-          this.error('关卡：新增失败')
-        })
+
+      this.$refs.add.style.display = 'none';
     },
     // 删除
     dele(b, a) {
@@ -311,25 +300,81 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delet({name:this.add1 == 0?'klondike':'poke', id:this.add2})
+        let children
+        switch(this.add1){
+          case 0:
+          children = 'klondike';
+            break;
+          case 1:
+          children = 'poke';
+            break;
+          case 2:
+          children = 'levelGroup';
+            break;
+        }
+        delet({children, id:this.add2})
           .then(res => {
             this.getData()
+            console.log(res);
+            this.succe( res );
           })
         this.$emit('introduction', this.introduction = '0')
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
       }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        });
+        this.error('已取消删除');
       });
     },
     // 增加关卡.length
     add(a, b) {
-      this.levelData()
+      this.$refs.globalDialog.dialogVisible = true;
+    },
+    // 分包
+    subpackages(){
+      function splitArray(arr, groups) {
+        let result = [];
+        let temp = [];
+
+        let each = Math.ceil(arr.length / groups);
+
+        for(let i = 0; i < arr.length; i++) {
+          temp.push(arr[i].id);
+          if(temp.length === each) {
+            result.push(temp);
+            temp = [];
+          }
+        }
+
+        if(temp.length > 0) {
+          result.push(temp); 
+        }
+
+        return result;
+      }
+        this.$prompt('请输入分包数量,需 <= '+this.state1.levels.length, {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        }).then(({ value }) => {
+          if(this.state1.levels.length >= value){
+            this.loading = true;
+            subpackage({
+              levelGroup_id:this.state1.levelGroupId,
+              ids:JSON.stringify(splitArray(this.state1.levels, value)),
+              deleteId:this.state1.id,
+              name:this.state1.name,
+            })
+            .then(res => {
+              this.succe(res);
+              this.getData()
+            })
+            .catch(err => {
+              this.succe(err.responseText);
+              this.getData()
+            })
+            }else{
+            console.log('不足分包数量');
+            }
+        }).catch(() => {
+          this.error( '取消输入' );       
+        });
     },
     // 编辑
     comp() {
@@ -339,28 +384,6 @@ export default {
       setTimeout(() => {
         this.$refs.input.focus()
       }, 10)
-    },
-    // 查询
-    down() {
-      let c = this
-      layer.prompt({ title: '查询' }, function (value, index, elem) {
-        if (value.length != 0) {
-          let a = c.navigation[c.box3].levels.filter(e => {
-            return e.name == value
-          })
-          if (a.length != 0) {
-            c.navigation[c.box3].levels = a
-            layer.msg('查询：成功'); // 显示 value
-          } else {
-            layer.msg('查询失败：未找到'); // 显示 value
-          }
-        } else {
-          c.navigation[c.box3].levels = c.currentPage1[c.box3].levels
-          layer.msg('查询失败：输入内容为空'); // 显示 value
-        }
-        // 关闭 prompt
-        layer.close(index);
-      })
     },
     draggables(formName){
       this.$refs[formName].validate((valid) => {
@@ -387,8 +410,20 @@ export default {
       if (this.value.length <= 6 && this.value != 0) {
         this.value1 = false,
         this.loading = true
-          this.input.innerHTML = this.value
-        put({children:this.add1 == 0?'klondike':'poke', id:this.add2,name:this.value})
+        this.input.innerHTML = this.value
+        let children
+        switch(this.add1){
+          case 0:
+          children = 'klondike';
+            break;
+          case 1:
+          children = 'poke';
+            break;
+          case 2:
+          children = 'levelGroup';
+            break;
+        }
+        put({children, id:this.add2,name:this.value})
           .then(res => {
             this.getData()
             this.succe(res)
@@ -427,6 +462,55 @@ export default {
         this.dialogFormVisible = false
       }
     },
+    stickup(){
+      if(this.copyData.length > 0){
+      this.$confirm('是否粘贴已复制的关卡包?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+      this.loading = true
+        deckGame({ids:JSON.stringify(this.copyData)})
+          .then((res) =>{
+            res.forEach((es,index) => {
+              this.copyData[index].deckGame = es
+              if(index+1 == res.length){
+              addklondike({levelGroup_id:this.add2,ids:JSON.stringify(this.copyData),levelAmount:this.copyData.length})
+                .then((ress) =>{
+                  this.message(ress);
+                })
+                .catch((errs) =>{
+                  this.getData();
+                  this.succe(errs.responseText);
+                })
+              }
+            });
+          })
+          .catch((err) =>{console.log(err);})
+      }).catch(() => {
+        this.error('已取消粘贴');
+      });
+    }else{
+      this.error('请先复制关卡包');
+    }
+    },
+    copy(){
+      let data = this.state1
+      this.copyData = []
+      for (const [index, res] of data.levels.entries()) {
+        let c = this.$store.state.data.filter(e => e.id == res.difficultyLevel)[0]
+        this.copyData.push({id:index+1,deckGame:'',
+                      difficultyLevel:res.difficultyLevel,
+                      prop:res.prop,
+                      stamina:res.stamina,
+                      gold: res.gold,experience: res.experience,diamond: res.diamond,
+                      difficultyScope:{min:c.movesMin,max:c.movesMax}});
+        if(index+1 == data.levels.length){
+          this.succe('复制成功！！！')
+          console.log(this.copyData);
+        }
+      }
+    },
     submitForm() {
           this.loading = true
       put({children:'poke', id:this.state2.id,ids:this.state1.id})
@@ -447,7 +531,6 @@ export default {
     querySearch(queryString, cb) {
       var restaurants = this.box;
       var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants;
-      // 调用 callback 返回建议列表的数据
       cb(results);
     },
     createFilter(queryString) {
@@ -472,13 +555,9 @@ export default {
     handleSelect(item) {
       this.cutName = this.state1.name
     },
-
     handleSelect1(item) {
       if (this.state1.name == this.state2.name) {
-        this.$message({
-          type: 'info',
-          message: '关卡中已存在此命名！！！'
-        })
+        this.error( '关卡中已存在此命名！！！' )
         this.state2.name = ''
       }else{
         this.state2.id = item.address
@@ -489,6 +568,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.lv{
+  color: #409EFF !important;
+}
 #add,
 #add1 {
   z-index: 2;
@@ -555,4 +637,5 @@ export default {
     width: 100%;
   }
 }
+
 </style>
