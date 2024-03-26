@@ -1,0 +1,39 @@
+{
+  "name": "playing",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "@layui/layui-vue": "^2.3.0",
+    "@wchbrad/vue-easy-tree": "^1.0.12",
+    "axios": "^1.4.0",
+    "bootstrap": "^5.3.0-alpha1",
+    "core-js": "^3.6.5",
+    "element-ui": "^2.15.13",
+    "jquery": "^3.7.0",
+    "layui": "^2.8.2",
+    "lodash": "^4.17.21",
+    "three": "^0.157.0",
+    "vue": "^2.6.11",
+    "vue-loader": "^17.1.1",
+    "vue-router": "^3.2.0",
+    "vue-virtual-scroll-list": "^2.3.5",
+    "vue-virtual-scroller": "^1.1.2",
+    "vuedraggable": "^2.24.3",
+    "vuex": "^3.4.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
+    "screenfull": "^5.1.0",
+    "vue-loader": "^13.0.0",
+    "vue-template-compiler": "^2.6.11"
+  }
+}
