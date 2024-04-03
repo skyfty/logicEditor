@@ -23,14 +23,14 @@
         @updateData="updateData" @introduction="introduction"  :introd="introd"
         @updateParts="updateParts" @ModelGroupDataChange="ModelGroupDataChange"
         :screenWidth="screenWidth" :screenHeight="screenHeight" 
-        :pokeData="pokeData" @updataPoke="updataPoke" :navigation="navigation" v-if="introd[0] == 'poke'">
+        :pokeData="pokeData" @updataPoke="updataPoke" :navigation="navigation" v-if="$store.state.formShow == 'poke'">
     </pokeForm>
     <partsForm 
         @updateData="updateData" @introduction="introduction" @updateParts="updateParts"
         :screenWidth="screenWidth" :screenHeight="screenHeight" :ModelGroup="ModelGroup"
-        :introd="introd" :partsData="partsData" :navigation="navigation" v-if="introd[0] == 'pokeParts'">
-    </partsForm>
-    <el-divider style="bottom: 0;">到达底部</el-divider>
+        :introd="introd" :partsData="partsData" :navigation="navigation" v-if="$store.state.formShow == 'pokeParts'">
+    </partsForm> 
+    <el-divider>到达底部</el-divider> 
   </div>
 </template>
 
@@ -41,7 +41,7 @@ import pokeForm from './data/poke.vue'
 import {EditData} from '../../api/api-pro'
 export default {
   name: 'KlondikeEditorAside',
-  props:['introd','navigation','partsData','pokeData','partsShow','screenWidth','screenHeight'],
+  props:['introd','navigation','partsData','pokeData','screenWidth','screenHeight'],
   data() {
     return {
       ModelGroupData:['',''],

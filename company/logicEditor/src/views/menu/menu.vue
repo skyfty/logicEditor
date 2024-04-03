@@ -1,6 +1,7 @@
 <template>
   <div>
-    <el-menu unique-opened style="box-sizing: border-box;height: calc(100vh - 45px) !important;width: 100%;" @select="handleSelect" default-active="" >
+    <el-menu unique-opened style="box-sizing: border-box;height: calc(100vh - 45px) !important;width: 100%;"
+              :default-active="'parts'+$store.state.partsActiveID" @open="handleOpen" @select="handleSelect">
       <div  class="customs">
         <span style="float: left;">关卡</span>
         <span style="float: right;">
@@ -93,21 +94,12 @@
       </div>
     </el-dialog>
     <input style='width:60px' autofocus v-show="value1" ref="input" @blur.prevent="txtinput()" v-model.trim="value">
-    <global-dialog :title="globalDialog.name" ref="globalDialog">
-      <!-- 弹出框内容 -->
-      <level_difficulty ref="difficulty" v-if="globalDialog.id == 0" :add2="add2" @getData="getData"></level_difficulty>
-      <resetGroup v-else-if="globalDialog.id == 1" :add2="add2" :state1="state1" @getData="getData"></resetGroup>
-      <subpackageView v-else-if="globalDialog.id == 2" :add2="add2" :state1="state1" @getData="getData"></subpackageView>
-    </global-dialog>
   </div>
 </template>
 
 <script>
 import _ from 'lodash';
-import $ from 'jquery';
-import level_difficulty from '../../components/level/levelGroup.vue';
-import resetGroup from '../../components/level/resetGroup.vue';
-import subpackageView from '../../components/subpackage/index.vue';
+import $ from 'jquery'; 
 import axios from 'axios';
 import draggable from 'vuedraggable'
 import { getdata, postdata, delet, put,Drag, cutGroup, deckGame, addklondike, addPoke, subpackage } from '../../api/api-pro'
@@ -116,7 +108,7 @@ export default {
   name: 'GameIndex',
   props:['navigation'],
   components: {
-    draggable,level_difficulty,resetGroup,subpackageView
+    draggable
   },
   data() {
     return {
@@ -150,14 +142,12 @@ export default {
       state1: '',
       state2: {id:"",name:""},
       box: '',
-      copyData:[],
-      globalDialog:{id:"",name:""},
+      copyData:[], 
     };
   },
 
   mounted() { 
-    this.getData()
-    // this.$refs.globalDialog.dialogVisible = true;
+    this.getData() 
   },
 
   computed: {
@@ -179,7 +169,7 @@ export default {
   },
 
   methods: {
-    handleSelect(key, keyPath) {
+    handleOpen(key, keyPath) {
         console.log(key, keyPath);
       },
     getData() {
@@ -258,15 +248,13 @@ export default {
           break;
         case 1:
           this.value = e.currentTarget.children[0].children[1].innerHTML
-          this.input = e.currentTarget.children[0].children[1]
-          this.globalDialog.id = false
+          this.input = e.currentTarget.children[0].children[1] 
           this.show = !this.show;
           this.loadAll(item)
           break;
         case 2:
           this.value = e.currentTarget.children[0].children[1].innerHTML
-          this.input = e.currentTarget.children[0].children[1]
-          this.globalDialog.id = false
+          this.input = e.currentTarget.children[0].children[1] 
           this.show = !this.show;
           break;
         default:
@@ -285,10 +273,12 @@ export default {
 
     // 新增
     fn(a, b) {
+          this.loading = true
       postdata()
         .then(res => {
           this.succe('关卡包：新增成功')
           this.getData()
+          this.loading = false
         })
         .catch(err => {
           this.error('关卡包：新增失败')
@@ -332,13 +322,15 @@ export default {
           children = 'levelGroup';
             break;
         }
+          this.loading = true
         delet({children, id:this.add2})
           .then(res => {
-            this.getData()
-            console.log(res.message);
+            this.getData() 
+          this.loading = false
             this.succe( res.message );
           })
           .catch(err => {
+          this.loading = false
             this.getData()
             this.succe( err.responseText );
           })
@@ -348,25 +340,29 @@ export default {
       });
     },
     addKlondike(a, b) {
+      this.loading = true;
       addklondike({levelGroup_id:this.add2})
         .then((res) => {
           console.log(res);
           this.getData()
+          this.loading = false
         })
         .catch((err) => {
           console.log(err.responseText);
+          this.loading = false
           this.getData()
         })
     },
     addPoke(a, b) { 
+          this.loading = true;
       addPoke({klondike_id:this.add2,levelGroup_id:this.introduction.id})
         .then((res) => {
-          console.log(res);
           this.getData()
+          this.loading = false
         })
-        .catch((err) => {
-          console.log(err.responseText);
+        .catch((err) => { 
           this.getData()
+          this.loading = false
         })
     },
     // 分包
@@ -405,10 +401,12 @@ export default {
             })
             .then(res => {
               this.succe(res);
+          this.loading = false
               this.getData()
             })
             .catch(err => {
               this.succe(err.responseText);
+          this.loading = false
               this.getData()
             })
             }else{
@@ -434,10 +432,12 @@ export default {
           cutGroup({id:this.add2,klondikeId:this.form.region})
           .then(res => {
             this.getData()
+          this.loading = false
             this.succe(res);
           })
           .catch(e => {
             this.getData()
+          this.loading = false
             this.error(e.responseText);
           })
         } else {
@@ -469,6 +469,7 @@ export default {
         put({children, id:this.add2,name:this.value})
           .then(res => {
             this.getData()
+            this.loading = false;
             this.succe(res.message)
           })
           .catch(err => {
@@ -558,9 +559,10 @@ export default {
     submitForm() {
           this.loading = true
       put({children:'poke', id:this.state2.id,ids:this.state1.id})
-          .then(res => {
+          .then(res => { 
             this.getData()
             this.succe(res)
+          this.loading = false
             this.dialogFormVisible = false
           })
           .catch(err => {

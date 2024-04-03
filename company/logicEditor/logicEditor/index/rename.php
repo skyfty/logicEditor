@@ -13,7 +13,7 @@ if (isset($_POST['id']) && isset($_POST['children'])) {
     $children = $_POST['children'];  
       
     // 检查是否有第二个ID需要交换  
-    if (isset($_POST['ids']) && isset($_POST['name'])) {  
+    if (isset($_POST['ids']) ) {  
         $ids = $_POST['ids'];  
         $name = $_POST['name'];  
           
@@ -28,13 +28,13 @@ if (isset($_POST['id']) && isset($_POST['children'])) {
             $name2 = $rows[1]['name'];  
               
             // 构建SQL更新语句以交换name值  
-            if ($id > $ids) {  
+            // if ($id > $ids) {  
                 $updateSql1 = "UPDATE `$children` SET name = ? WHERE id = ?";  
                 $updateSql2 = "UPDATE `$children` SET name = ? WHERE id = ?";  
-            } else {  
-                $updateSql1 = "UPDATE `$children` SET name = ? WHERE id = ?";  
-                $updateSql2 = "UPDATE `$children` SET name = ? WHERE id = ?";  
-            }  
+            // } else {  
+            //     $updateSql1 = "UPDATE `$children` SET name = ? WHERE id = ?";  
+            //     $updateSql2 = "UPDATE `$children` SET name = ? WHERE id = ?";  
+            // }  
               
             // 准备并绑定参数以防止SQL注入  
             $stmt1 = $conn->prepare($updateSql1);  
@@ -44,7 +44,7 @@ if (isset($_POST['id']) && isset($_POST['children'])) {
               
             // 执行更新操作  
             if ($stmt1->execute() && $stmt2->execute()) {  
-                echo json_encode(['message' => '切换操作成功']);  
+                echo json_encode(['message' => '切换操作成功'.$name1.$name2]);  
             } else {  
                 echo json_encode(['error' => '切换操作失败: ' . $conn->error]);  
             }  

@@ -22,7 +22,7 @@
     </template>
     <!-- 创建添加模型 -->
     <el-divider content-position="left">{{ addDivider.label }}</el-divider>  
-    <el-form label-width="35px" :rules="addRules" :ref="addDivider.ref" :model="addFormInline"  class="demoFormInline">  
+    <el-form label-width="35px" :rules="addRules" :ref="addDivider.ref" :model="addFormInline" class="demo-form-inline">  
       <el-row class="row-bg" :type="updateSize?'flex':''" :justify="updateSize?'space-around':''" >  
         <el-col>  
           <el-form-item :label="addForm.label" :prop="addForm.rules" size="small"> 
@@ -254,6 +254,12 @@ export default {
 .parts{
   width: 100%;
   box-sizing: border-box; 
-  overflow: auto;
+  overflow: auto; 
+
+  div{
+    .poke-demo-form-inline{
+      .el-form-item{
+      margin: 0 !important;
+      }}   } 
 }
 </style>

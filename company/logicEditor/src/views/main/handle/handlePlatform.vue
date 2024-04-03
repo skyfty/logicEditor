@@ -3,18 +3,19 @@
     <el-collapse v-model="activeName" accordion>
       <el-collapse-item :title="divider[dividerIndex].label" :name="dividerIndex" v-for="(dividerLabel, dividerIndex) in form" :key="dividerIndex">
         <div v-for="(item, index) in dividerLabel" :key="index">
-          <el-row class="row-bg" v-if="formInline[1][0].Projection != 'Orthographic' ? item.label != 'Size' : item.label != 'Field of View'">
+          <el-row class="row-bg" v-if="formInline[1][0].Projection != 'OrthographicCamera' ? ( item.label != 'Size' && item.label != 'Zoom' ) : item.label != 'Field of View'">
             <el-col :span="7">
               <div style="margin-top: 4px;">{{ item.label }}</div>
             </el-col>
             <el-col :span="17" style="display: flex; justify-content: space-between; flex-direction: row-reverse;position: relative;">
-              <el-form label-width="auto" label-position="left" :ref="divider[dividerIndex].ref" :model="formInline[dividerIndex][index]" class="demoFormInline">
+              <el-form label-width="20px" label-position="left" :ref="divider[dividerIndex].ref" :model="formInline[dividerIndex][index]" class="demoFormInline">
                 <el-row class="row-bg" :type="item.data.length <= 3 ? 'flex' : ''" :justify="item.data.length <= 3 ? 'space-around' : ''">
                   <el-col v-for="(items,indexs) in item.data" :key="indexs">
-                    <el-form-item :label="items.label" size="small">
+                    <el-form-item :label="items.type == 's'? '': items.label" size="small">
                       <el-tooltip class="item" effect="light" size="mini" :disabled="items.tooltip == ''" :content="items.tooltip" placement="bottom">
                         <el-input type="number" style="float: right !important;" v-model="formInline[dividerIndex][index][items.model]" :placeholder="items.label" v-if="items.type == 'number'"></el-input>
                         <el-switch v-model="formInline[dividerIndex][index][items.model]" style="float: right !important;margin-top: 6px;" :placeholder="items.label" v-else-if="items.type == 'switch'"></el-switch> 
+                        <el-radio v-model="formInline[dividerIndex][index][items.model]" v-else-if="items.type == 's'" border :label="items.label"></el-radio>
                         <el-slider v-model="formInline[dividerIndex][index][items.model]" :min="1" v-else-if="items.type == 'progress'" style="width: 260px !important;" show-input input-size="mini"></el-slider>
                         <el-select v-model="formInline[dividerIndex][index][items.model]" style="float: right !important;" :placeholder="items.label" v-else-if="items.type == 'select'">
                           <el-option class="options" v-for="(items1,indexs1) in items.data" :key="indexs1" :value="items1.filepath">{{ items1.name }}</el-option>
@@ -43,20 +44,21 @@ export default {
       // 关卡属性表单
       formInline: [
         [
-          { x: 0, y: 0, z: 0 },
-          { x: 1, y: 1, z: 1 },
-          { x: 2, y: 2, z: 2 },
+          { x: this.$store.state.pokeData[3].PositionX, y: this.$store.state.pokeData[3].PositionY, z: this.$store.state.pokeData[3].PositionZ },
+          { x: this.$store.state.pokeData[3].RotationX, y: this.$store.state.pokeData[3].RotationY, z: this.$store.state.pokeData[3].RotationZ },
+          { x: this.$store.state.pokeData[3].ScaleX, y: this.$store.state.pokeData[3].ScaleY, z: this.$store.state.pokeData[3].ScaleZ },
         ],
         [
-          { Projection: 'Orthographic', },
-          { Size: 400 },
-          { FieldOfView: 60 },
-          { Zoom: 1 },
-          { Near: -1000, Far: 20000 },
+          { Projection: this.$store.state.pokeData[3].Projection, },
+          { Size: this.$store.state.pokeData[3].Size },
+          { FieldOfView: this.$store.state.pokeData[3].FieldOfView - 0 },
+          { Zoom: this.$store.state.pokeData[3].zoom - 0 },
+          { Near: this.$store.state.pokeData[3].Near, Far: this.$store.state.pokeData[3].Far },
         ],
         [
-          { MeshRenderer: false },
-          { PlaneGeometry: false },
+          { MeshRenderer: true },
+          { PlaneGeometry: true },
+          { translate: 'translate' },
         ]
       ],
       divider: [
@@ -96,7 +98,7 @@ export default {
             label: 'Projection',
             data: [
               { label: '', model: 'Projection', rules: 'Projection', data: [
-                                        { filepath:'Orthographic' ,name:'Orthographic' },
+                                        { filepath:'OrthographicCamera' ,name:'OrthographicCamera' },
                                         { filepath:'PerspectiveCamera' ,name:'PerspectiveCamera' },
                                       ], type: 'select', tooltip: '相机模式' 
               },
@@ -141,6 +143,14 @@ export default {
               { label: '', model: 'PlaneGeometry', rules: 'PlaneGeometry', data: '', type: 'switch', tooltip: '网格渲染器' },
             ]
           },
+          {
+            label: 'translate',
+            data: [
+              { label: 'translate', model: 'translate', rules: 'translate', data: '', type: 's', tooltip: '平移' },
+              { label: 'rotate', model: 'translate', rules: 'translate', data: '', type: 's', tooltip: '旋转' },
+              { label: 'scale', model: 'translate', rules: 'translate', data: '', type: 's', tooltip: '缩放' },
+            ]
+          },
         ],
       ],
     };
@@ -160,14 +170,20 @@ export default {
             .then(results => {
               const [form1Valid, form2Valid, form3Valid] = results;
               if (form1Valid && form2Valid && form3Valid) {
-                EditData({children:'pokesArguments',id:this.introd[3].id,data:JSON.stringify(newValue)})
+                EditData({children:'pokesArguments',id:this.$store.state.pokeData[3].id,data:JSON.stringify(newValue)})
                   .then(res => {
-                    this.$store.dispatch('fetchData') 
-                    this.succe(res.message);
+                    this.$store.dispatch('fetchData')
+                    .then(data => {
+                            this.succe(res.message);
+                            this.$emit('cameraChange',newValue)
+                            this.$emit('toggleGridPlatformVisibility',this.formInline[2][0].MeshRenderer ? true : false);
+                            this.$emit('toggleWallVisibility',this.formInline[2][1].PlaneGeometry ? true : false);
+                    })  
+                    .catch(error => {  
+                      // 处理错误  
+                      console.error(error);  
+                    });
                   })
-                this.$emit('cameraChange',newValue)
-                this.$emit('toggleGridPlatformVisibility',this.formInline[2][0].MeshRenderer ? true : false);
-                this.$emit('toggleWallVisibility',this.formInline[2][1].PlaneGeometry ? true : false);
             } else {
               this.error('error submit!!');
             }
@@ -178,7 +194,7 @@ export default {
   },
 
   mounted() {
-    this.formCopy(this.introd)
+    // this.formCopy(this.introd)
   },
 
   methods: {
@@ -199,6 +215,7 @@ export default {
         [
           { MeshRenderer: false },
           { PlaneGeometry: false },
+          { translate: 'translate' },
         ]
       ]
     },

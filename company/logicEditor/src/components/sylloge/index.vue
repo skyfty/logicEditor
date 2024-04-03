@@ -10,9 +10,8 @@
     <div class="main" ref="main">
       <el-tabs type="border-card" @tab-click="tabClick" :active-name="tabPane[0].value">
         <el-tab-pane :label="item.label" :name="item.value" v-for="(item,index) in tabPane" :key="index">
-          <parts v-if="tabIndex == 0"></parts>
-          <level_difficulty v-else-if="tabIndex == 1"></level_difficulty>
-          <mainssss v-else-if="tabIndex == 2"></mainssss>
+          <parts v-if="tabIndex == 1"></parts>
+          <imageDispose v-else-if="tabIndex == 0"></imageDispose>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -21,22 +20,20 @@
 
 <script>
 import { getdata, } from '../../api/api-pro'
-import level_difficulty from '../../components/difficulty/level_difficulty.vue'
-import parts from '../../components/parts/parts.vue'
-import mainssss from '../../views/main/mainssss.vue'
+import parts from './data/parts.vue'
+import imageDispose from './data/imageDispose.vue'
 export default {
   name: 'KlondikeEditorIndex',
   components:{
-    level_difficulty,parts,mainssss
+    parts,imageDispose
   },
   data() {
     return {
       screenHeight: document.body.clientHeight,  //屏幕尺寸
       loading:false,
       tabPane:[
-        {label:'零部件', value:'零部件s'},
-        {label:'难度设置', value:'难度设置s'},
-        {label:'模型', value:'模型'},
+        {label:'图像', value:'图像'},
+        {label:'零部件', value:'零部件'},
       ],
       tabIndex: 0
     };

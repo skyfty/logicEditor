@@ -27,7 +27,7 @@ if ($picture === null || $poke_id === null) {
 
   
 // 创建新的 poke 记录  
-$name = '关卡' . $sequenceId; 
+$name = '模型' . $sequenceId; 
   
 $pokeSql = "INSERT INTO pokeparts (picture, poke_id, name, chartlet, x, y, z, rotationX, rotationY, rotationZ, antle, type) 
                     VALUES ('$picture', '$poke_id', '$name', 'resource/parts/apple_01_cr.png', 0, 0, 0, 0, 0, 0, 1, '可拆解')";  

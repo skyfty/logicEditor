@@ -25,20 +25,23 @@ switch ($children) {
     case 'pokeparts':  
         // 使用预处理语句来避免 SQL 注入  
         $stmt = $conn->prepare("UPDATE pokeparts SET   
-            picture=?, x=?, y=?, z=?, rotationX=?, rotationY=?, rotationZ=?, antle=?, type=? 
+            picture=?, x=?, y=?, z=?, rotationX=?, rotationY=?, rotationZ=?, scaleX=?, scaleY=?, scaleZ=?, antle=?, type=? 
             WHERE id = ?");  
           
         // 绑定参数  
-        $stmt->bind_param("sssssssssi",  
+        $stmt->bind_param("sdddddddddssi",  
             $dataArray[0]['picture'],  
             $dataArray[1]['x'],  
             $dataArray[1]['y'],  
             $dataArray[1]['z'],  
             $dataArray[2]['rotationX'],  
             $dataArray[2]['rotationY'],  
-            $dataArray[2]['rotationZ'],  
-            $dataArray[3]['antle'],  
-            $dataArray[3]['type'],  
+            $dataArray[2]['rotationZ'], 
+            $dataArray[3]['scaleX'],  
+            $dataArray[3]['scaleY'],  
+            $dataArray[3]['scaleZ'], 
+            $dataArray[4]['antle'],  
+            $dataArray[4]['type'],  
             $id  
         );  
           
@@ -52,6 +55,41 @@ switch ($children) {
         // 关闭预处理语句  
         $stmt->close();  
     break;  
+
+    case 'editPokeparts':  
+        // 使用预处理语句来避免 SQL 注入  
+        $stmt = $conn->prepare("UPDATE pokeparts SET   
+            x=?, y=?, z=?, rotationX=?, rotationY=?, rotationZ=?, scaleX=?, scaleY=?, scaleZ=? 
+            WHERE id = ?");  
+          
+              // 转换角度为弧度（如果需要的话）  
+    $rotationXInRadians = rad2deg($dataArray[1]['_x']);
+    $rotationYInRadians = rad2deg($dataArray[1]['_y']);
+    $rotationZInRadians = rad2deg($dataArray[1]['_z']);
+        // 绑定参数  
+        $stmt->bind_param("dddddddddi",  
+            $dataArray[0]['x'],  
+            $dataArray[0]['y'],  
+            $dataArray[0]['z'],
+            $rotationXInRadians, 
+            $rotationYInRadians, 
+            $rotationZInRadians, 
+            $dataArray[2]['x'],  
+            $dataArray[2]['y'],
+            $dataArray[2]['z'],    
+            $id  
+        );  
+          
+        // 执行预处理语句  
+        if ($stmt->execute()) {  
+            echo json_encode(['message' => '信息已同步']);  
+        } else {  
+            echo json_encode(['error' => '信息同步失败', 'error_message' => $conn->error]);  
+        }  
+          
+        // 关闭预处理语句  
+        $stmt->close();  
+    break;
 
     case 'poke':  
         // 使用预处理语句来避免 SQL 注入  

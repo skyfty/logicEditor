@@ -11,21 +11,19 @@
     </ul>
     <global-dialog :title="value" ref="globalDialog">
       <!-- 弹出框内容 -->
-      <level_difficulty v-if="index == 1"></level_difficulty>
+      <!-- <level_difficulty v-if="index == 1"></level_difficulty> -->
     </global-dialog>
     <navigation></navigation>
   </div>
 </template>
 
 <script>
-import level_difficulty from '../components/difficulty/level_difficulty.vue'
 import navigation from './navigation.vue';
 export default{
   data(){
     return {
       box:[
         {name:"admin",class:'layui-icon-github',tui:'退出'},
-        {name:"难度",class:'layui-icon-slider'},
         {name:"工具栏",class:'el-icon-s-data'},
       ],
       value:'',
@@ -33,18 +31,19 @@ export default{
     }
   },
   components:{
-    navigation,level_difficulty,
+    navigation, 
   },
   mounted() {
 
   },
   methods:{
     onClickChildren(data,index){
+      // if(index == 1){
+      //       this.index = index
+      //       this.value = data.name;
+      //       this.$refs.globalDialog.dialogVisible = true;
+      // }else 
       if(index == 1){
-            this.index = index
-            this.value = data.name;
-            this.$refs.globalDialog.dialogVisible = true;
-      }else if(index == 2){
             this.index = index
             this.value = data.name;
             this.$router.push({path: '/sylloge_indexa',query: {}})

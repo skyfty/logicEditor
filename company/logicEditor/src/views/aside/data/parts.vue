@@ -28,11 +28,11 @@
     </template>
     <!-- 配套模型 -->
     <global-dialog :title="value" ref="globalDialog">
-      <matchingModel :introd="introd"></matchingModel>
+      <matchingModel :introd="$store.state.partsData"></matchingModel>
     </global-dialog>
     <el-button type="primary" class="delet" @click="value = '配套模型';$refs.globalDialog.dialogVisible = true; " :loading="loading"> 配套模型 </el-button>
     <!-- 删除零件 --> 
-    <el-button type="primary" class="delet" @click="onSubmit()" :loading="loading">{{ loading ? '正在移除 '+introd[4].name+' ...' : '移除该模型 ‘ '+introd[4].name+' ’' }}</el-button>
+    <el-button type="primary" class="delet" @click="onSubmit()" :loading="loading">{{ loading ? '正在移除 '+$store.state.partsData[4].name+' ...' : '移除该模型 ‘ '+$store.state.partsData[4].name+' ’' }}</el-button>
     
     <div ref="previewFbx">
       <el-divider content-position="left">模型预览</el-divider>
@@ -48,19 +48,21 @@ import matchingModel from '../../aside/data/matchingModel.vue'
 import {EditData,GetData,removeData } from '../../../api/api-pro'
 export default {
   name: 'KlondikeEditorAside',
-  props:['introd','navigation','partsData','ModelGroup','screenWidth','screenHeight'],
+  props:['introd','navigation','ModelGroup','screenWidth','screenHeight'],
   data() {
     return {
       formInline: [
         { picture: '',},
         { x:'',y:'', z: '' },
         { rotationX: '',rotationY: '',rotationZ: ''},
+        { scaleX: '',scaleY: '',scaleZ: ''},
         { antle: '', type: ''},
       ],
       divider:[
         {label:'模型', ref:'formInline'},
         {label:'位置 ', ref:'formInlines'},
         {label:'朝向 ', ref:'formInlineRotation'},
+        {label:'大小 ', ref:'modelScale'},
         {label:'属性 ', ref:'type'},
       ],
       form:[
@@ -76,6 +78,11 @@ export default {
           {label: 'X', model:'rotationX', rules:'rotationX',data:'',type:'number',tooltip:'X轴旋转'},
           {label: 'Y', model:'rotationY', rules:'rotationY',data:'',type:'number',tooltip:'Y轴旋转'},
           {label: 'Z', model:'rotationZ', rules:'rotationZ',data:'',type:'number',tooltip:'Z轴旋转'},
+        ],
+        [
+          {label: 'X', model:'scaleX', rules:'scaleX',data:'',type:'number',tooltip:'X轴旋转'},
+          {label: 'Y', model:'scaleY', rules:'scaleY',data:'',type:'number',tooltip:'Y轴旋转'},
+          {label: 'Z', model:'scaleZ', rules:'scaleZ',data:'',type:'number',tooltip:'Z轴旋转'},
         ],
         [
           {label: 'antle', model:'antle', rules:'antle',data:'',type:'switch',tooltip:'是否可拆解'},
@@ -114,6 +121,17 @@ export default {
           ]
         },
         {
+          scaleX: [
+            { required: true, message: 'scaleX'}
+          ],
+          scaleY: [
+            { required: true, message: 'scaleY'}
+          ],
+          scaleZ: [
+            { required: true, message: 'scaleZ'}
+          ]
+        },
+        {
           antle: [
             { required: true, message: 'antle'}
           ],
@@ -139,36 +157,21 @@ export default {
       this.previewFbxData = newValue[4].picture;
       this.formCopy(newValue)
     },
-    // introd(newValue){
-    //   this.previewFbxData = this.introd[4].picture;
-    //   this.formCopy(newValue)
-    // },
-    // partsData(newValue){
-    //   this.previewFbxData = this.introd[4].picture;
-    //   this.formCopy(newValue)
-    // },
-    navigation(newValue){
-      let levelGroup = newValue.filter(e => e.id == this.introd[1].id)[0]
-      let klondike = levelGroup.levelPack.filter(e => e.id == this.introd[2].id)[0]
-      let poke = klondike.levels.filter(e => e.id == this.introd[3].id)[0]
-      let parts = poke.parts.filter(e => e.id == this.introd[4].id)[0]
-      this.$emit('updateParts',[ 'pokeParts', levelGroup, klondike, poke,parts ])
-    },
     formInline: {  
       handler(newArray, oldArray) {
           const form1 = this.$refs.formInline[0];
           const form2 = this.$refs.formInlines[0];
           const form3 = this.$refs.formInlineRotation[0];
-          const form4 = this.$refs.type[0];
+          const form4 = this.$refs.modelScale[0];
+          const form5 = this.$refs.type[0];
 
-          Promise.all([form1.validate(), form2.validate(), form3.validate(), form4.validate()])
+          Promise.all([form1.validate(), form2.validate(), form3.validate(), form4.validate(), form5.validate()])
             .then(results => {
-              const [form1Valid, form2Valid, form3Valid, form4Valid] = results;
-              if (form1Valid && form2Valid && form3Valid && form4Valid) {
-                EditData({children:'pokeparts',id:this.introd[4].id,data:JSON.stringify(newArray)})
-                .then(res => {
-                  // this.$emit('updateData',)
-                this.$store.dispatch('fetchData')
+              const [form1Valid, form2Valid, form3Valid, form4Valid, form5Valid] = results;
+              if (form1Valid && form2Valid && form3Valid && form4Valid && form5Valid) {
+                EditData({children:'pokeparts',id:this.$store.state.partsData[4].id,data:JSON.stringify(newArray)})
+                .then(res => { 
+                  this.$store.dispatch('fetchData')
                   .then(data => {
                     this.$store.dispatch('updata') 
                   })  
@@ -207,7 +210,7 @@ export default {
       }else{
         this.updateSize = false
       }
-      this.formCopy(this.introd)
+      this.formCopy(this.$store.state.partsData)
   },
 
   methods: {
@@ -216,7 +219,7 @@ export default {
     },
     onSubmit(formName) {
       this.loading = true
-      removeData({id:this.introd[4].id,children:'pokeparts'})
+      removeData({id:this.$store.state.partsData[4].id,children:'pokeparts'})
         .then(res => { 
           this.succe(res.message);
           this.loading = false
@@ -250,7 +253,7 @@ export default {
           customClass:'notify-error'
         });
     },
-    formCopy(newValue){ 
+    formCopy(newValue){
       this.formInline[0].picture = newValue[4].picture;
       this.formInline[1].x = newValue[4].x;
       this.formInline[1].y = newValue[4].y;
@@ -258,8 +261,11 @@ export default {
       this.formInline[2].rotationX = newValue[4].rotationX;
       this.formInline[2].rotationY = newValue[4].rotationY;
       this.formInline[2].rotationZ = newValue[4].rotationZ;
-      this.formInline[3].antle =  Boolean(newValue[4].antle);
-      this.formInline[3].type = newValue[4].type;
+      this.formInline[3].scaleX = newValue[4].scaleX;
+      this.formInline[3].scaleY = newValue[4].scaleY;
+      this.formInline[3].scaleZ = newValue[4].scaleZ;
+      this.formInline[4].antle =  Boolean(newValue[4].antle);
+      this.formInline[4].type = newValue[4].type;
     },
     handleMouseEnter(event,data) {
       this.previewFbxData = data;
@@ -269,7 +275,7 @@ export default {
       this.$refs.previewFbx.style.left = event.target.getBoundingClientRect().left - this.$refs.previewFbx.clientWidth - 20 + 'px'
     },  
     handleMouseLeave(event,data) {
-      this.previewFbxData = this.introd[4].picture;
+      this.previewFbxData = this.$store.state.partsData[4].picture;
       this.$refs.previewFbx.style.position = ''
     }  
   },

@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 26/03/2024 11:19:02
+ Date: 03/04/2024 10:23:53
 */
 
 SET NAMES utf8mb4;
@@ -27,12 +27,12 @@ CREATE TABLE `klondike`  (
   `levelGroupId` int(11) NULL DEFAULT NULL,
   `sequenceId` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 253 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 255 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of klondike
 -- ----------------------------
-INSERT INTO `klondike` VALUES (252, '关卡包1', 46, 1);
+INSERT INTO `klondike` VALUES (252, ' 关卡包1 ', 46, 1);
 
 -- ----------------------------
 -- Table structure for levelgroup
@@ -42,12 +42,12 @@ CREATE TABLE `levelgroup`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 47 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 48 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of levelgroup
 -- ----------------------------
-INSERT INTO `levelgroup` VALUES (46, '类型0 ');
+INSERT INTO `levelgroup` VALUES (46, '类型0');
 
 -- ----------------------------
 -- Table structure for matchingmodel
@@ -62,13 +62,11 @@ CREATE TABLE `matchingmodel`  (
   INDEX `fk_matchingmodel_jk2`(`parts_id`) USING BTREE,
   CONSTRAINT `fk_matchingmodel_jk1` FOREIGN KEY (`pokeParts_id`) REFERENCES `pokeparts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_matchingmodel_jk2` FOREIGN KEY (`parts_id`) REFERENCES `pokeparts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of matchingmodel
 -- ----------------------------
-INSERT INTO `matchingmodel` VALUES (12, 109, 103);
-INSERT INTO `matchingmodel` VALUES (13, 110, 103);
 
 -- ----------------------------
 -- Table structure for modelgroup
@@ -83,17 +81,19 @@ CREATE TABLE `modelgroup`  (
   INDEX `picture`(`picture`) USING BTREE,
   INDEX `fk_poke_id`(`poke_id`) USING BTREE,
   CONSTRAINT `fk_poke_id` FOREIGN KEY (`poke_id`) REFERENCES `poke` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 64 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 67 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of modelgroup
 -- ----------------------------
-INSERT INTO `modelgroup` VALUES (57, 1245, 'resource/parts/lingjian_mutou_02.fbx', '20');
-INSERT INTO `modelgroup` VALUES (58, 1245, 'resource/parts/lingjian_mutou_01.fbx', '74');
+INSERT INTO `modelgroup` VALUES (58, 1245, 'resource/parts/lingjian_mutou_01.fbx', '76');
 INSERT INTO `modelgroup` VALUES (60, 1245, 'resource/parts/lingjian_mutou_03.fbx', '3');
-INSERT INTO `modelgroup` VALUES (61, 1245, 'resource/parts/AK-74.fbx', '1');
+INSERT INTO `modelgroup` VALUES (61, 1245, 'resource/parts/AK-74.fbx', '0');
 INSERT INTO `modelgroup` VALUES (62, 1246, 'resource/parts/lingjian_mutou_01.fbx', '1');
-INSERT INTO `modelgroup` VALUES (63, 1245, 'resource/parts/07.fbx', '4');
+INSERT INTO `modelgroup` VALUES (63, 1245, 'resource/parts/07.fbx', '5');
+INSERT INTO `modelgroup` VALUES (64, 1245, 'resource/parts/QQB01.fbx', '1');
+INSERT INTO `modelgroup` VALUES (65, 1245, 'resource/parts/cs.fbx', '1');
+INSERT INTO `modelgroup` VALUES (66, 1245, 'resource/parts/lingjian_mutou01.fbx', '0');
 
 -- ----------------------------
 -- Table structure for parts
@@ -105,7 +105,7 @@ CREATE TABLE `parts`  (
   `filepath` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 53 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 62 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of parts
@@ -147,6 +147,15 @@ INSERT INTO `parts` VALUES (49, '02.fbx', 'resource/parts/02.fbx', '02');
 INSERT INTO `parts` VALUES (50, '04.fbx', 'resource/parts/04.fbx', '04');
 INSERT INTO `parts` VALUES (51, '03.fbx', 'resource/parts/03.fbx', '03');
 INSERT INTO `parts` VALUES (52, 'AK-74.fbx', 'resource/parts/AK-74.fbx', 'AK-74');
+INSERT INTO `parts` VALUES (53, 'QQB01.fbx', 'resource/parts/QQB01.fbx', 'QQB01');
+INSERT INTO `parts` VALUES (54, 'QQB02.fbx', 'resource/parts/QQB02.fbx', 'QQB02');
+INSERT INTO `parts` VALUES (55, 'QQB06.fbx', 'resource/parts/QQB06.fbx', 'QQB06');
+INSERT INTO `parts` VALUES (56, 'QQB05.fbx', 'resource/parts/QQB05.fbx', 'QQB05');
+INSERT INTO `parts` VALUES (57, 'QQB04.fbx', 'resource/parts/QQB04.fbx', 'QQB04');
+INSERT INTO `parts` VALUES (58, 'QQB07.fbx', 'resource/parts/QQB07.fbx', 'QQB07');
+INSERT INTO `parts` VALUES (59, 'QQB03.fbx', 'resource/parts/QQB03.fbx', 'QQB03');
+INSERT INTO `parts` VALUES (60, 'cs.fbx', 'resource/parts/cs.fbx', 'cs');
+INSERT INTO `parts` VALUES (61, 'lingjian_mutou01.fbx', 'resource/parts/lingjian_mutou01.fbx', 'lingjian_mutou01');
 
 -- ----------------------------
 -- Table structure for poke
@@ -175,7 +184,7 @@ CREATE TABLE `poke`  (
   `ScaleX` float NULL DEFAULT 0,
   `ScaleY` float NULL DEFAULT 0,
   `ScaleZ` float NULL DEFAULT 0,
-  `Projection` enum('Orthographic','PerspectiveCamera') CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT 'PerspectiveCamera',
+  `Projection` enum('OrthographicCamera','PerspectiveCamera') CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT 'PerspectiveCamera',
   `Size` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `Near` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `Far` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
@@ -187,7 +196,7 @@ CREATE TABLE `poke`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_Klondike_levels`(`KlondikeId`) USING BTREE,
   INDEX `fk_Klondike_levels1`(`zoom`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1247 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1248 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of poke
@@ -203,8 +212,8 @@ INSERT INTO `poke` VALUES (1239, '关卡10', 46, 239, 1, 60, 10, 0, 0, 0, 0, '0'
 INSERT INTO `poke` VALUES (1241, '关卡8', 46, 240, 3, 8, 8, 7, 0, 0, 0, '0', '0', 0, 0, 0, 0, 0, 0, 1, 1, 1, 'PerspectiveCamera', '400', '0.1', '1000', 0, 0, 100, 100, 60);
 INSERT INTO `poke` VALUES (1242, '关卡9', 46, 240, 3, 8, 9, 8, 0, 0, 0, '0', '0', 0, 0, 0, 0, 0, 0, 1, 1, 1, 'PerspectiveCamera', '400', '0.1', '1000', 0, 0, 100, 100, 60);
 INSERT INTO `poke` VALUES (1244, '关卡10', 46, 251, 1, 60, 10, 9, 0, 0, 0, '0', '0', 0, 0, 0, 0, 0, 0, 1, 1, 1, 'PerspectiveCamera', '400', '0.1', '1000', 0, 0, 100, 100, 60);
-INSERT INTO `poke` VALUES (1245, '关卡11', 46, 252, 2, 630, 11, 0, 112, 250, 20, '0', '0', 100, 100, 200, 108, 0, 0, 2, 2, 2, 'PerspectiveCamera', '400', '0.1', '2000', 0, 0, 100, 100, 66);
-INSERT INTO `poke` VALUES (1246, '关卡12', 46, 252, 2, 600, 12, 11, 0, 0, 0, '0', '0', 50, 50, 100, 0, 0, 0, 1, 1, 1, 'Orthographic', '600', '0.1', '2000', 0, 0, 100, 100, 40);
+INSERT INTO `poke` VALUES (1245, ' 关卡1 ', 46, 252, 1, 0, 11, 0, 112, 250, 20, '0', '0', 30, 40, 400, 0, 0, 0, 1, 1, 1, 'PerspectiveCamera', '400', '0.1', '2000', 0, 0, 100, 100, 89);
+INSERT INTO `poke` VALUES (1246, ' 关卡2 ', 46, 252, 3, 600, 12, 2, 0, 0, 0, '0', '0', 60, 50, 200, 4, 0, 0, 1, 1, 1, 'PerspectiveCamera', '600', '0.1', '2000', 0, 0, 100, 100, 100);
 
 -- ----------------------------
 -- Table structure for pokeparts
@@ -219,26 +228,29 @@ CREATE TABLE `pokeparts`  (
   `z` float NULL DEFAULT NULL,
   `picture` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `chartlet` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
-  `rotationX` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
-  `rotationY` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
-  `rotationZ` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `rotationX` float NULL DEFAULT NULL,
+  `rotationY` float NULL DEFAULT NULL,
+  `rotationZ` float NULL DEFAULT NULL,
   `antle` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
   `type` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+  `scaleX` float NULL DEFAULT 1,
+  `scaleY` float NULL DEFAULT 1,
+  `scaleZ` float NULL DEFAULT 1,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_pokeParts_jk1`(`poke_id`) USING BTREE,
   INDEX `fk_pokeParts_jk2`(`picture`) USING BTREE,
   CONSTRAINT `fk_pokeParts_jk1` FOREIGN KEY (`poke_id`) REFERENCES `poke` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE = InnoDB AUTO_INCREMENT = 112 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 121 CHARACTER SET = utf8 COLLATE = utf8_unicode_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of pokeparts
 -- ----------------------------
-INSERT INTO `pokeparts` VALUES (100, '关卡1', 1246, 0, 0, 0, 'resource/parts/lingjian_mutou_01.fbx', 'resource/parts/apple_01_cr.png', '0', '0', '0', '1', '可拆解');
-INSERT INTO `pokeparts` VALUES (101, '关卡2', 1246, 0, 0, 0, 'resource/parts/lingjian_mutou_01.fbx', 'resource/parts/apple_01_cr.png', '0', '0', '0', '1', '可拆解');
-INSERT INTO `pokeparts` VALUES (103, '关卡2', 1245, 23, 10, 0, 'resource/parts/lingjian_mutou_01.fbx', 'resource/parts/apple_01_cr.png', '-3', '0', '0', '1', '可拆解');
-INSERT INTO `pokeparts` VALUES (109, '关卡2', 1245, 16, 20, 20, 'resource/parts/lingjian_mutou_01.fbx', 'resource/parts/apple_01_cr.png', '0', '000', '0', '1', '可拆解');
-INSERT INTO `pokeparts` VALUES (110, '关卡3', 1245, 0, 0, 0, 'resource/parts/AK-74.fbx', 'resource/parts/apple_01_cr.png', '10', '0', '18', '1', '可拆解');
-INSERT INTO `pokeparts` VALUES (111, '关卡4', 1245, 0, 0, 0, 'resource/parts/07.fbx', 'resource/parts/apple_01_cr.png', '9', '20', '20', '1', '可拆解');
+INSERT INTO `pokeparts` VALUES (100, '关卡1', 1246, 6, 12.7614, 0, 'resource/parts/lingjian_mutou_01.fbx', 'resource/parts/apple_01_cr.png', 0, 0, 0, '1', '可拆解', 1, 1, 1);
+INSERT INTO `pokeparts` VALUES (101, '关卡2', 1246, 100, 7.51631, 0, 'resource/parts/lingjian_mutou_01.fbx', 'resource/parts/apple_01_cr.png', 0, 0, 0, '1', '可拆解', 1, 1, 1);
+INSERT INTO `pokeparts` VALUES (110, '关卡3', 1245, -149.809, 202.184, -5.08187, 'resource/parts/QQB01.fbx', 'resource/parts/apple_01_cr.png', 90, -90, 0, '1', '可拆解', 0.738162, 1.13781, 1.10209);
+INSERT INTO `pokeparts` VALUES (118, '关卡5', 1245, -33.9731, -1.27748, -5.78565, 'resource/parts/lingjian_mutou01.fbx', 'resource/parts/apple_01_cr.png', 0, 0, 0, '1', '可拆解', 0.600307, 0.495237, 1);
+INSERT INTO `pokeparts` VALUES (119, '模型3', 1245, 60.8063, 129.22, 9, 'resource/parts/AK-74.fbx', 'resource/parts/apple_01_cr.png', 91, 0, 89, '1', '可拆解', 0.00414923, 0.00414923, 0.00414923);
+INSERT INTO `pokeparts` VALUES (120, '模型4', 1245, 218.655, 132, 7, 'resource/parts/AK-74.fbx', 'resource/parts/apple_01_cr.png', 86.0553, 1.12156, -89.7014, '1', '可拆解', 0.00414923, 0.00414923, 0.00401054);
 
 -- ----------------------------
 -- Table structure for sequence_map

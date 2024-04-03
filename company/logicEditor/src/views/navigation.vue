@@ -8,10 +8,7 @@
       </el-col>
       <el-col :span="16">
         <div class="grid-content bg-purple-light">
-          <main1 v-if="data != ''" 
-              :introd="data" :partsData="partsData" :pokeData="pokeData" :navigation="navigation"
-              @updateData="updateData" @introduction="introduction"
-              :screenWidth="screenWidth" :screenHeight="screenHeight"></main1>
+          <main1 v-if="loading" @updataMain="updataMain" ></main1>
           <h1 v-else style="text-align: center;padding-top: 25%;font-size: 30px;color: rgb(161, 245, 138);">开启你的游戏之旅吧！！！</h1>
         </div>
       </el-col>
@@ -45,6 +42,7 @@ export default {
       screenWidth: 0,  //屏幕尺寸
       screenHeight: 0,  //屏幕尺寸
       navigation:"",
+      loading: false,
     };
   },
 
@@ -57,6 +55,9 @@ export default {
   }, 
 
   watch:{
+    '$store.state.pokeData'(newValue, oldValue) {
+      this.updataMain()
+    },
     data(newValue,oldValue) {
       // console.log(newValue);
     },
@@ -80,6 +81,12 @@ export default {
   },
 
   methods: {
+    updataMain(){
+      this.loading = false;
+      setTimeout(() => {
+        this.loading = true;
+      }, 1); 
+    },
     updateData(){
       this.$refs.menu.loading = true
       getdata()
